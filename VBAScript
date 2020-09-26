@@ -1,0 +1,96 @@
+Sub main()
+    Dim xSh As Worksheet
+    Application.ScreenUpdating = False
+    For Each xSh In Worksheets
+        xSh.Select
+        Call calculate
+        Call Beatify
+    Next
+    'Application.ScreenUpdating
+End Sub
+
+Sub Beatify()
+    Cells(1, 9).Value = "ticker"
+    'Inserting new column for yearly change'
+    Cells(1, 10).Value = "year change"
+    'Inserting new column for percent change'
+    Cells(1, 11).Value = "percentage change"
+    'Inserting new column for total stock volume'
+    Cells(1, 12).Value = "stock volume"
+           
+End Sub
+Sub calculate()
+'For j = 1 To Worksheets.Count'
+    'Worksheets(j).Activate
+    
+'    If ActiveSheet.Index = Worksheets.Count Then
+'        Worksheets(1).Activate
+'    Else
+'        ActiveSheet.Next.Activate
+'   End If
+
+    lastRow = ActiveSheet.UsedRange.Rows.Count
+    Dim ticker As String
+    Dim stock_volume As Double
+    Dim open_year As Double
+    Dim close_year As Double
+    Dim year_change As Double
+    Dim percentage_change As Double
+    Dim total_volume As Long
+    Dim ticker_summary_row_number As Integer
+    'Setting initial variable'
+    ' Loop through worksheets '
+    ticker = Cells(2, "A").Value
+   
+   
+    ' Setting stock_volume as double '
+   
+    stock_volume = 0
+    open_year = 0
+    close_year = 0
+    total_volume = 0
+    ticker_summary_row_number = 2
+    For i = 2 To lastRow
+       
+
+       If Cells(i, "A").Value = ticker Then
+        stock_volume = stock_volume + Cells(i, "G").Value
+         If open_year = 0 Then open_year = Cells(i, "C").Value
+       Else
+       close_year = Cells(i - 1, "F").Value
+        If (open_year > 0 And close_year > 0) Then
+         SaveTickerOutcomeToCells ticker_summary_row_number, ticker, stock_volume, open_year, close_year
+         ticker_summary_row_number = ticker_summary_row_number + 1
+        End If
+         ticker = Cells(i, "A").Value
+         stock_volume = Cells(i, "G").Value
+         open_year = Cells(i, "C").Value
+        'Saves ticker outcome results before moving on to the next ticker'
+       
+       End If
+      Next i
+'Next j
+End Sub
+
+Sub SaveTickerOutcomeToCells(ByVal ticker_summary_row_number As Integer, ticker As String, stock_volume As Double, open_year As Double, close_year As Double)
+Dim year_change As Double
+Dim percentage_change As Double
+year_change = close_year - open_year
+percentage_change = ((close_year - open_year) / open_year) * 100
+'Inserting new column for ticker'
+    Cells(ticker_summary_row_number, 9).Value = ticker
+    'Inserting new column for yearly change'
+    Cells(ticker_summary_row_number, 10).Value = year_change
+    'Inserting new column for percent change'
+    Cells(ticker_summary_row_number, 11).Value = percentage_change
+    'Inserting new column for total stock volume'
+    Cells(ticker_summary_row_number, 12).Value = stock_volume
+End Sub
+
+
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+
+End Sub
+
+
+
